@@ -1,0 +1,25 @@
+# Visual Studio
+.vs/
+*.user
+*.suo
+*.dbmdl
+*.sdf
+*.pfx
+*.log
+*.cache
+*.csproj.user
+
+# Dossiers binaires
+bin/
+obj/
+out/
+
+# Fichiers de configuration locaux
+appsettings.Development.json
+appsettings.Local.json
+
+# Migrations compilées
+Migrations/
+
+# Fichiers de logs
+*.log
