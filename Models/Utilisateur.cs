@@ -18,5 +18,7 @@ namespace Application_Livraison_Backend.Models
 
         [Required]
         public string Mdp { get; set; }
+       
+        public string Role { get; set; }
     }
 }

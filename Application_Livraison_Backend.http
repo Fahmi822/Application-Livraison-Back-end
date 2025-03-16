@@ -1,6 +1,6 @@
 @Application_Livraison_Backend_HostAddress = http://localhost:5287
 
-GET {{Application_Livraison_Backend_HostAddress}}/weatherforecast/
+GET {{Application_Livraison_Backend_HostAddress}}
 Accept: application/json
 
 ###

@@ -16,5 +16,9 @@ namespace Application_Livraison_Backend.Models
         public ICollection<Produit> Produits { get; set; }
 
         public Livraison Livraison { get; set; }
+
+        [ForeignKey("Livreur")]
+        public int? LivreurId { get; set; }  // Clé étrangère vers Livreur (nullable si une commande peut ne pas être assignée à un livreur)
+        public Livreur Livreur { get; set; }  // Navigation vers le Livreur
     }
 }

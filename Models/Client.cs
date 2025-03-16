@@ -1,9 +1,12 @@
-﻿namespace Application_Livraison_Backend.Models
-{
-    public class Client : Utilisateur
-    {
-        public string Adresse { get; set; }
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
-        public ICollection<Commande> Commandes { get; set; }
+namespace Application_Livraison_Backend.Models
+{
+    
+    public class Client : Utilisateur  // Vérifiez bien que 'Utilisateur' est votre classe de base
+    {
+       
+        public string Adresse { get; set; }
     }
 }
