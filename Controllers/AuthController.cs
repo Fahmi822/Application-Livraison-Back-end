@@ -4,7 +4,9 @@ using Application_Livraison_Backend.Models;
 using Application_Livraison_Backend.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace Application_Livraison_Backend.Controllers
@@ -69,17 +71,35 @@ namespace Application_Livraison_Backend.Controllers
             var token = _authService.GenerateJwtToken(client);
             return Ok(new { token });
         }
-
-        // L'Admin crée un compte Livreur
         [HttpPost("admin/register-livreur")]
         public async Task<IActionResult> RegisterLivreur([FromBody] SignupRequest request)
         {
-            // Seul l'Admin doit avoir accès à cette route
-            var admin = await _context.Utilisateurs
-                .FirstOrDefaultAsync(u => u.Email == request.Email && u.Role == "Admin");
+            // Récupérer le token JWT depuis l'en-tête de la requête
+            var token = HttpContext.Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+            if (string.IsNullOrEmpty(token))
+            {
+                return Unauthorized(new { message = "Token manquant" });
+            }
 
-            if (admin == null)
-                return Unauthorized(new { message = "Accès non autorisé" });
+            // Valider le token et récupérer les claims
+            var handler = new JwtSecurityTokenHandler();
+            var jwtToken = handler.ReadJwtToken(token);
+            var roleClaim = jwtToken.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role)?.Value;
+
+            // Vérifier si l'utilisateur est un Admin
+            if (roleClaim != "Admin")
+            {
+                return Unauthorized(new { message = "Accès non autorisé. Seul un Admin peut ajouter un livreur." });
+            }
+
+            // Vérifier si un utilisateur avec cet email existe déjà
+            var existingUser = await _context.Utilisateurs
+                .FirstOrDefaultAsync(u => u.Email == request.Email);
+
+            if (existingUser != null)
+            {
+                return BadRequest(new { message = "L'utilisateur existe déjà avec cet email" });
+            }
 
             // Créer un nouveau Livreur
             var liv = new Livreur
@@ -94,8 +114,8 @@ namespace Application_Livraison_Backend.Controllers
             _context.Utilisateurs.Add(liv);
             await _context.SaveChangesAsync();
 
-            var token = _authService.GenerateJwtToken(liv);
-            return Ok(new { token });
+            var tokenResponse = _authService.GenerateJwtToken(liv);
+            return Ok(new { token = tokenResponse });
         }
     }
 }
