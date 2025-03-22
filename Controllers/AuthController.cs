@@ -5,9 +5,8 @@ using Application_Livraison_Backend.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
 using System.Security.Claims;
-using System.Threading.Tasks;
+
 
 namespace Application_Livraison_Backend.Controllers
 {
@@ -17,11 +16,13 @@ namespace Application_Livraison_Backend.Controllers
     {
         private readonly AuthService _authService;
         private readonly AppDbContext _context;
-
-        public AuthController(AuthService authService, AppDbContext context)
+        private readonly EmailService _emailService;
+        public AuthController(AuthService authService,EmailService emailService, AppDbContext context)
         {
             _authService = authService;
+            _emailService = emailService;
             _context = context;
+            
         }
 
         // Connexion
@@ -113,6 +114,21 @@ namespace Application_Livraison_Backend.Controllers
 
             _context.Utilisateurs.Add(liv);
             await _context.SaveChangesAsync();
+
+            // Envoyer un e-mail au livreur avec ses informations de connexion
+            var emailSubject = "Vos informations de connexion";
+            var emailBody = $@"
+        <h1>Bonjour {liv.Nom},</h1>
+        <p>Votre compte livreur a été créé avec succès.</p>
+        <p>Voici vos informations de connexion :</p>
+        <ul>
+            <li><strong>Email :</strong> {liv.Email}</li>
+            <li><strong>Mot de passe :</strong> {request.Mdp}</li>
+        </ul>
+        <p>Connectez-vous dès maintenant pour commencer à travailler.</p>
+    ";
+
+            await _emailService.SendEmailAsync(liv.Email, emailSubject, emailBody);
 
             var tokenResponse = _authService.GenerateJwtToken(liv);
             return Ok(new { token = tokenResponse });

@@ -30,6 +30,8 @@ builder.Services.AddSwaggerGen();
 
 // Ajouter le service AuthService pour l'injection de dépendances
 builder.Services.AddScoped<AuthService>();
+// Ajouter le service EmailService pour l'injection de dépendances
+builder.Services.AddScoped<EmailService>();
 
 // Ajouter les services pour les contrôleurs API
 builder.Services.AddControllers();
