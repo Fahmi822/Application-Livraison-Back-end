@@ -11,6 +11,7 @@ namespace Application_Livraison_Backend.Data
         public DbSet<Commande> Commandes { get; set; }
         public DbSet<Livraison> Livraisons { get; set; }
         public DbSet<Produit> Produits { get; set; }
+        public DbSet<Categorie> Categories { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
