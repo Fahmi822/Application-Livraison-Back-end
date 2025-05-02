@@ -8,8 +8,8 @@ namespace Application_Livraison_Backend.Dtos
 
         [Required]
         [StringLength(50)]
-        public string Nom { get; set; }
+        public required string Nom { get; set; }
 
-        public string Description { get; set; }
+        public required string Description { get; set; }
     }
 }

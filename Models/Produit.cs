@@ -9,7 +9,8 @@ namespace Application_Livraison_Backend.Models
 
         [Required(ErrorMessage = "Le nom du produit est obligatoire")]
         [StringLength(100, ErrorMessage = "Le nom ne peut excéder 100 caractères")]
-        public string Nom { get; set; }
+        public string Nom { get; set; } = string.Empty;
+
 
         [Required(ErrorMessage = "Le prix est obligatoire")]
         [Column(TypeName = "decimal(18,2)")]
@@ -17,7 +18,7 @@ namespace Application_Livraison_Backend.Models
         public decimal Prix { get; set; }
 
         [StringLength(1000, ErrorMessage = "La description ne peut excéder 1000 caractères")]
-        public string Description { get; set; }
+        public required string Description { get; set; }
 
         [Required(ErrorMessage = "La quantité est obligatoire")]
         [Range(0, int.MaxValue, ErrorMessage = "La quantité ne peut être négative")]
@@ -37,5 +38,6 @@ namespace Application_Livraison_Backend.Models
 
         [NotMapped]
         public IFormFile ImgUp { get; set; } // Pour l'upload (non stocké en base)
+
     }
 }

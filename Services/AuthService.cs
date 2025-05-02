@@ -39,6 +39,7 @@ namespace Application_Livraison_Backend.Services
         }
 
         // Générer le JWT pour un utilisateur
+        // Générer le JWT pour un utilisateur
         public string GenerateJwtToken(Utilisateur user)
         {
             var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]));
@@ -46,10 +47,11 @@ namespace Application_Livraison_Backend.Services
 
             var claims = new[]
             {
-                new Claim(ClaimTypes.Name, user.Nom),
-                new Claim(ClaimTypes.Email, user.Email),
-                new Claim(ClaimTypes.Role, user.Role)  // Utilisez le rôle du modèle utilisateur
-            };
+             new Claim(ClaimTypes.Name, user.Nom),
+             new Claim(ClaimTypes.Email, user.Email),
+             new Claim(ClaimTypes.Role, user.Role),  // Utilisez le rôle du modèle utilisateur
+             new Claim("ClientId", user.Id.ToString())  // Ajoutez le ClientId comme claim
+    };
 
             var token = new JwtSecurityToken(
                 issuer: _config["Jwt:Issuer"],

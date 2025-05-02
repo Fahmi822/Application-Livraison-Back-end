@@ -4,17 +4,17 @@ namespace Application_Livraison_Backend.Models
 {
     public class Livraison
     {
-        public int Id { get; set; }
-        public string Statut { get; set; }
-        public DateTime DateLivraison { get; set; }
-        public bool RecRecu { get; set; }
+        public required  int Id { get; set; }
+        public required string Statut { get; set; }
+        public required DateTime DateLivraison { get; set; }
+        public required bool RecRecu { get; set; }
 
         [ForeignKey("Commande")]
-        public int CommandeId { get; set; }
-        public Commande Commande { get; set; }
+        public required int CommandeId { get; set; }
+        public required Commande Commande { get; set; }
 
         [ForeignKey("Livreur")]
-        public int LivreurId { get; set; }
-        public Livreur Livreur { get; set; }
+        public required int LivreurId { get; set; }
+        public required Livreur Livreur { get; set; }
     }
 }

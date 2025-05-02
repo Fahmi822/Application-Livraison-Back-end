@@ -9,16 +9,16 @@ namespace Application_Livraison_Backend.DTOs
         [Required(ErrorMessage = "Le nom du produit est obligatoire")]
         [StringLength(100, MinimumLength = 3,
              ErrorMessage = "Le nom doit contenir entre 3 et 100 caractères")]
-        public string Nom { get; set; }
+        public required string Nom { get; set; }
 
         [Required(ErrorMessage = "Le prix est obligatoire")]
         [Range(0.01, 100000,
              ErrorMessage = "Le prix doit être entre 0.01 et 100 000")]
-        public decimal Prix { get; set; }
+        public required decimal Prix { get; set; }
 
         [StringLength(1000,
              ErrorMessage = "La description ne peut excéder 1000 caractères")]
-        public string Description { get; set; }
+        public required string Description { get; set; }
 
         [Required(ErrorMessage = "La quantité est obligatoire")]
         [Range(0, 10000,
@@ -26,11 +26,11 @@ namespace Application_Livraison_Backend.DTOs
         public int Quantite { get; set; }
 
         [Required(ErrorMessage = "L'ID de catégorie est obligatoire")]
-        public int CategorieId { get; set; }
+        public required int CategorieId { get; set; }
 
         // Correction: Soit vous gardez IFormFile sans StringLength, soit vous utilisez string pour le chemin
-        public IFormFile ImgUp { get; set; } // Pour l'upload de fichier
+        public required IFormFile ImgUp { get; set; } // Pour l'upload de fichier
 
-        public string Img { get; set; } // Pour le chemin de l'image stockée
+        public required string Img { get; set; } // Pour le chemin de l'image stockée
     }
 }

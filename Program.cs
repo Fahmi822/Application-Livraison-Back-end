@@ -1,19 +1,20 @@
-using Application_Livraison_Backend.Data;
+ï»¿using Application_Livraison_Backend.Data;
 using Application_Livraison_Backend.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using System.Security.Claims;
 using System.Text;
 using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Ajouter la chaîne de connexion de MySQL à partir de appsettings.json
+// Ajouter la chaÃ®ne de connexion de MySQL Ã  partir de appsettings.json
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseMySql(
         builder.Configuration.GetConnectionString("DefaultConnection"),
-        new MySqlServerVersion(new Version(8, 0, 30)) // Vérifiez votre version MySQL
+        new MySqlServerVersion(new Version(8, 0, 30)) // VÃ©rifiez votre version MySQL
     )
 );
 
@@ -30,12 +31,12 @@ builder.Services.AddCors(options =>
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-// Ajouter le service AuthService pour l'injection de dépendances
+// Ajouter le service AuthService pour l'injection de dÃ©pendances
 builder.Services.AddScoped<AuthService>();
-// Ajouter le service EmailService pour l'injection de dépendances
+// Ajouter le service EmailService pour l'injection de dÃ©pendances
 builder.Services.AddScoped<EmailService>();
 
-// Ajouter les services pour les contrôleurs API
+// Ajouter les services pour les contrÃ´leurs API
 builder.Services.AddControllers();
 
 // Configuration de l'authentification JWT
@@ -55,9 +56,11 @@ builder.Services.AddAuthentication(options =>
         ValidateIssuerSigningKey = true,
         ValidIssuer = builder.Configuration["Jwt:Issuer"],
         ValidAudience = builder.Configuration["Jwt:Audience"],
-        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]))
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"])),
+        RoleClaimType = ClaimTypes.Role // ðŸ”¥ ajoute ceci pour que [Authorize(Roles = "Admin")] fonctionne
     };
 });
+
 
 builder.Services.Configure<FormOptions>(options =>
 {
@@ -71,7 +74,7 @@ builder.Services.AddControllers()
         options.JsonSerializerOptions.WriteIndented = true;
     });
 
-// Création de l'application
+// CrÃ©ation de l'application
 var app = builder.Build();
 
 // Gestion des erreurs et HSTS
@@ -82,7 +85,7 @@ if (!app.Environment.IsDevelopment())
 }
 else
 {
-    app.UseDeveloperExceptionPage();  // Afficher les erreurs détaillées en mode dev
+    app.UseDeveloperExceptionPage();  // Afficher les erreurs dÃ©taillÃ©es en mode dev
 }
 
 // Swagger (documentation de l'API)
@@ -92,11 +95,11 @@ app.UseSwaggerUI(c =>
     c.SwaggerEndpoint("/swagger/v1/swagger.json", "API de Livraison v1");
 });
 
-// Application des règles CORS
+// Application des rÃ¨gles CORS
 app.UseCors("AllowAll");
 
-// Redirection HTTPS si nécessaire
-// app.UseHttpsRedirection(); // Décommentez si vous souhaitez forcer HTTPS
+// Redirection HTTPS si nÃ©cessaire
+// app.UseHttpsRedirection(); // DÃ©commentez si vous souhaitez forcer HTTPS
 
 app.UseRouting();
 app.UseStaticFiles();
@@ -105,10 +108,10 @@ app.UseStaticFiles();
 app.UseAuthentication();
 app.UseAuthorization();
 
-// Mappage des contrôleurs API
+// Mappage des contrÃ´leurs API
 app.MapControllers();
 
-// Endpoint par défaut pour vérifier que l'application fonctionne bien
+// Endpoint par dÃ©faut pour vÃ©rifier que l'application fonctionne bien
 app.MapGet("/", () => "Bienvenue dans l'API de gestion de livraison !");
 
 // Lancer l'application

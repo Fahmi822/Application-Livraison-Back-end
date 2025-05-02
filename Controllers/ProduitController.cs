@@ -318,5 +318,44 @@ namespace Application_Livraison_Backend.Controllers
             var adminId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             _logger.LogInformation("Admin {AdminId} {Action}", adminId, action);
         }
+        // ✅ Obtenir tous les produits avec leur catégorie
+        [HttpGet("public")]
+        [AllowAnonymous]
+        public async Task<ActionResult<IEnumerable<Produit>>> GetAllProduitsPublic()
+        {
+            return await _context.Produits
+                .AsNoTracking()
+                .Include(p => p.Categorie)
+                .ToListAsync();
+        }
+
+        // ✅ Obtenir les produits par catégorie
+        [HttpGet("public/categorie/{categorieId}")]
+        [AllowAnonymous]
+        public async Task<ActionResult<IEnumerable<Produit>>> GetProduitsByCategoriePublic(int categorieId)
+        {
+            return await _context.Produits
+                .Where(p => p.CategorieId == categorieId)
+                .Include(p => p.Categorie)
+                .AsNoTracking()
+                .ToListAsync();
+        }
+
+        // ✅ Obtenir un produit par ID
+        [HttpGet("public/{id:int}")]
+        [AllowAnonymous]
+        public async Task<ActionResult<Produit>> GetProduitByIdPublic(int id)
+        {
+            var produit = await _context.Produits
+                .Include(p => p.Categorie)
+                .FirstOrDefaultAsync(p => p.Id == id);
+
+            if (produit == null)
+                return NotFound(new { message = "Produit non trouvé" });
+
+            return Ok(produit);
+        }
+
     }
+
 }

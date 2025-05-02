@@ -28,10 +28,20 @@ namespace Application_Livraison_Backend.Services
             email.Body = builder.ToMessageBody();
 
             using var smtp = new SmtpClient();
-            await smtp.ConnectAsync(_config["EmailSettings:SmtpServer"], int.Parse(_config["EmailSettings:SmtpPort"]), SecureSocketOptions.StartTls);
+
+            // Correction ici :
+            string? smtpPortString = _config["EmailSettings:SmtpPort"];
+            int smtpPort = 587; // Valeur par défaut, 587 est souvent utilisé pour StartTls
+            if (!string.IsNullOrEmpty(smtpPortString))
+            {
+                smtpPort = int.Parse(smtpPortString);
+            }
+
+            await smtp.ConnectAsync(_config["EmailSettings:SmtpServer"], smtpPort, SecureSocketOptions.StartTls);
             await smtp.AuthenticateAsync(_config["EmailSettings:SmtpUser"], _config["EmailSettings:SmtpPass"]);
             await smtp.SendAsync(email);
             await smtp.DisconnectAsync(true);
         }
+
     }
 }

@@ -36,14 +36,16 @@ namespace Application_Livraison_Backend.Controllers
 
             var token = _authService.GenerateJwtToken(user);
 
-            // Retourne un objet avec le nom, le token et le rôle
+            // Retourne un objet avec le nom, le token, le rôle et le ClientId
             return Ok(new
             {
                 nom = user.Nom,
                 token = token,
-                role = user.Role
+                role = user.Role,
+                clientId = user.Id  // Ajout du clientId dans la réponse
             });
         }
+
 
         // Inscription - Réservée aux Clients
         [HttpPost("register")]

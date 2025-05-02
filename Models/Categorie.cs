@@ -8,9 +8,9 @@ namespace Application_Livraison_Backend.Models
 
         [Required]
         [StringLength(50)]
-        public string Nom { get; set; }
+        public required string Nom { get; set; }
 
-        public string Description { get; set; }
+        public  string Description { get; set; }
 
         // Relation avec Produit
         public ICollection<Produit> Produits { get; set; }
