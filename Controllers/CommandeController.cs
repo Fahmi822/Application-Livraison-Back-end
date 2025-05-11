@@ -90,7 +90,9 @@ namespace Application_Livraison_Backend.Controllers
         [HttpPut("annuler/{commandeId}")]
         public async Task<IActionResult> AnnulerCommande(int commandeId)
         {
-            var commande = await _context.Commandes.FindAsync(commandeId);
+            var commande = await _context.Commandes
+                .Include(c => c.Client)
+                .FirstOrDefaultAsync(c => c.Id == commandeId);
 
             if (commande == null)
                 return NotFound(new { message = "Commande non trouvée." });
@@ -99,16 +101,43 @@ namespace Application_Livraison_Backend.Controllers
                 return BadRequest(new { message = "Commande déjà annulée." });
 
             commande.Statut = "Annulée";
+
+            // Créer une notification
+            var notification = new Notification
+            {
+                Message = $"Commande #{commandeId} a été annulée",
+                Type = "Annulation",
+                CommandeId = commandeId,
+                ExpediteurId = commande.ClientId,
+                ExpediteurType = "Client",
+                DestinataireType = "Admin" // Ou autre logique selon qui annule
+            };
+
+            if (User.IsInRole("Admin"))
+            {
+                notification.ExpediteurType = "Admin";
+                // Si admin annule, on peut notifier le client
+                notification.DestinataireId = commande.ClientId;
+                notification.DestinataireType = "Client";
+            }
+
+            _context.Notifications.Add(notification);
             await _context.SaveChangesAsync();
 
             return Ok(new { message = "Commande annulée avec succès." });
         }
 
+        // Dans CommandeController.cs
         [HttpPut("assigner-livreur/{commandeId}")]
         public async Task<IActionResult> AssignerLivreur(int commandeId, [FromQuery] int livreurId)
         {
-            var commande = await _context.Commandes.FindAsync(commandeId);
-            var livreur = await _context.Utilisateurs.OfType<Livreur>().FirstOrDefaultAsync(l => l.Id == livreurId);
+            var commande = await _context.Commandes
+                .Include(c => c.Client)
+                .FirstOrDefaultAsync(c => c.Id == commandeId);
+
+            var livreur = await _context.Utilisateurs
+                .OfType<Livreur>()
+                .FirstOrDefaultAsync(l => l.Id == livreurId);
 
             if (commande == null)
                 return NotFound(new { message = "Commande non trouvée." });
@@ -116,11 +145,31 @@ namespace Application_Livraison_Backend.Controllers
             if (livreur == null)
                 return NotFound(new { message = "Livreur non trouvé." });
 
+            // Créer une nouvelle livraison avec toutes les propriétés requises
+            var livraison = new Livraison
+            {
+                Id = 0, // sera généré par la base de données
+                Statut = "En préparation",
+                DateLivraison = DateTime.Now.AddDays(1), // Date estimée
+                RecRecu = false,
+                CommandeId = commandeId,
+                LivreurId = livreurId,
+                Commande = commande, // Assigner l'objet Commande
+                Livreur = livreur    // Assigner l'objet Livreur
+            };
+
+            _context.Livraisons.Add(livraison);
+
             commande.LivreurId = livreurId;
             commande.Statut = "En cours de livraison";
+
             await _context.SaveChangesAsync();
 
-            return Ok(new { message = "Livreur assigné avec succès à la commande." });
+            return Ok(new
+            {
+                message = "Livreur assigné avec succès à la commande.",
+                livraisonId = livraison.Id
+            });
         }
         [HttpPut("livrer/{commandeId}")]
         public async Task<IActionResult> MarquerCommeLivree(int commandeId)

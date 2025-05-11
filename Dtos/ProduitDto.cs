@@ -18,19 +18,18 @@ namespace Application_Livraison_Backend.DTOs
 
         [StringLength(1000,
              ErrorMessage = "La description ne peut excéder 1000 caractères")]
-        public required string Description { get; set; }
+        public  string Description { get; set; }
 
         [Required(ErrorMessage = "La quantité est obligatoire")]
         [Range(0, 10000,
              ErrorMessage = "La quantité doit être entre 0 et 10 000")]
         public int Quantite { get; set; }
 
-        [Required(ErrorMessage = "L'ID de catégorie est obligatoire")]
-        public required int CategorieId { get; set; }
+        public  int CategorieId { get; set; }
 
         // Correction: Soit vous gardez IFormFile sans StringLength, soit vous utilisez string pour le chemin
-        public required IFormFile ImgUp { get; set; } // Pour l'upload de fichier
+        public  IFormFile ImgUp { get; set; } // Pour l'upload de fichier
 
-        public required string Img { get; set; } // Pour le chemin de l'image stockée
+        public  string Img { get; set; } // Pour le chemin de l'image stockée
     }
 }

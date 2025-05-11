@@ -37,6 +37,7 @@ namespace Application_Livraison_Backend.Data
                 .HasForeignKey(c => c.LivreurId)
                 .OnDelete(DeleteBehavior.SetNull);  // Allow a null Livreur
 
+
             // Many-to-many relation between Commande and Produit
             modelBuilder.Entity<Commande>()
                 .HasMany(c => c.Produits)
@@ -55,7 +56,13 @@ namespace Application_Livraison_Backend.Data
                 .HasOne(l => l.Livreur)
                 .WithMany()
                 .HasForeignKey(l => l.LivreurId)
-                .OnDelete(DeleteBehavior.Restrict); // Prevent deleting a Livreur if a delivery exists
+                .OnDelete(DeleteBehavior.Restrict);
+            // Prevent deleting a Livreur if a delivery exists
+            modelBuilder.Entity<Notification>()
+                .HasOne<Commande>()
+                .WithMany()
+                .HasForeignKey(n => n.CommandeId)
+                 .OnDelete(DeleteBehavior.SetNull);
 
             // Ensure unique email for Utilisateur
             modelBuilder.Entity<Utilisateur>()

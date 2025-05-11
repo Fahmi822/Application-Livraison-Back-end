@@ -47,10 +47,10 @@ namespace Application_Livraison_Backend.Services
 
             var claims = new[]
             {
-             new Claim(ClaimTypes.Name, user.Nom),
-             new Claim(ClaimTypes.Email, user.Email),
-             new Claim(ClaimTypes.Role, user.Role),  // Utilisez le rôle du modèle utilisateur
-             new Claim("ClientId", user.Id.ToString())  // Ajoutez le ClientId comme claim
+        new Claim(ClaimTypes.Name, user.Nom),
+        new Claim(ClaimTypes.Email, user.Email),
+        new Claim(ClaimTypes.Role, user.Role),
+        new Claim("ClientId", user.Id.ToString()) // Gardez la même casse partout
     };
 
             var token = new JwtSecurityToken(
